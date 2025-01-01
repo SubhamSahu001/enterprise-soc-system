@@ -1,0 +1,131 @@
+-step 1 A basic simulated log dataset for testing anomaly detection:
+
+-csv code
+timestamp,user_id,ip_address,action,response_time
+2025-01-01 12:00:00,101,192.168.1.1,login,200
+2025-01-01 12:01:00,102,192.168.1.2,access_file,150
+2025-01-01 12:02:00,101,192.168.1.1,logout,180
+2025-01-01 12:03:00,103,10.0.0.1,access_file,120
+2025-01-01 12:04:00,104,10.0.0.2,login,300
+2025-01-01 12:05:00,101,192.168.1.1,delete_file,600
+Save this as log_data.csv in the backend/app/ directory.
+
+Backend Code for Threat Detection
+-threat_detection.py (Enhanced):
+
+-python code
+import pandas as pd
+from sklearn.ensemble import IsolationForest
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+def load_data(file_path):
+    """Load the log dataset."""
+    return pd.read_csv(file_path)
+
+def detect_anomalies(log_data):
+    """Detect anomalies using Isolation Forest."""
+    model = IsolationForest(contamination=0.1, random_state=42)
+    features = log_data[['response_time']]  # Using response time as a feature
+    model.fit(features)
+    log_data['anomaly'] = model.predict(features)
+    return log_data
+
+@app.route('/analyze', methods=['POST'])
+def analyze_logs():
+    """API endpoint to analyze logs and detect anomalies."""
+    file_path = 'app/log_data.csv'  # Replace with uploaded file path if needed
+    log_data = load_data(file_path)
+    analyzed_data = detect_anomalies(log_data)
+    response = analyzed_data[analyzed_data['anomaly'] == -1].to_dict(orient='records')
+    return jsonify({"anomalies": response})
+
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0", port=5000)
+      ---
+-Install missing dependencies (if any):
+
+-bash code
+pip install pandas scikit-learn flask
+-Test the API:
+
+-Start the server: python app/main.py
+-Use tools like Postman or curl:
+bash code
+curl -X POST http://127.0.0.1:5000/analyze
+---
+Step 2: Frontend to Display Threats
+Create a frontend component to fetch and display the anomalies detected by the backend.
+
+Frontend Directory Structure Ensure the frontend/src/components/ folder has a ThreatDashboard.js file.
+
+ThreatDashboard.js
+
+-jsx code
+import React, { useState, useEffect } from 'react';
+
+const ThreatDashboard = () => {
+    const [anomalies, setAnomalies] = useState([]);
+
+    useEffect(() => {
+        fetch("http://127.0.0.1:5000/analyze", {
+            method: "POST",
+        })
+            .then((response) => response.json())
+            .then((data) => setAnomalies(data.anomalies))
+            .catch((error) => console.error("Error fetching anomalies:", error));
+    }, []);
+
+    return (
+        <div>
+            <h1>Threat Dashboard</h1>
+            <table border="1">
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>User ID</th>
+                        <th>IP Address</th>
+                        <th>Action</th>
+                        <th>Response Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {anomalies.map((anomaly, index) => (
+                        <tr key={index}>
+                            <td>{anomaly.timestamp}</td>
+                            <td>{anomaly.user_id}</td>
+                            <td>{anomaly.ip_address}</td>
+                            <td>{anomaly.action}</td>
+                            <td>{anomaly.response_time}</td>
+                        </tr>
+                    ))}
+                </tbody>
+            </table>
+        </div>
+    );
+};
+
+export default ThreatDashboard;
+---
+-Update App.js to include the dashboard:
+
+jsx code
+import React from 'react';
+import ThreatDashboard from './components/ThreatDashboard';
+
+function App() {
+    return (
+        <div>
+            <h1>Unified Enterprise SOC Platform</h1>
+            <ThreatDashboard />
+        </div>
+    );
+}
+
+export default App;
+---
+-Run the frontend:
+
+bash code
+npm start
