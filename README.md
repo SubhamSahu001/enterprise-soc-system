@@ -16,6 +16,7 @@ The Unified Enterprise SOC Platform (UESP) provides an end-to-end solution for m
 Our goal is to empower security teams with an intuitive, enterprise-grade platform that addresses the complexities of modern cybersecurity.
 
 ---
+![image](https://github.com/user-attachments/assets/a3f070da-6172-4660-aada-a08ebfb54aa2)
 
 ## Core Components
 
