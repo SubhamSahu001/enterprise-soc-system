@@ -1,0 +1,22 @@
+**Frontend Development (React.js)**
+Initialize the React project:
+-bash code
+npx create-react-app frontend
+cd frontend
+-Modify App.js to display dashboard components:
+-jsx code
+import React from 'react';
+
+function App() {
+    return (
+        <div>
+            <h1>Unified Enterprise SOC Platform Dashboard</h1>
+            <p>Real-time Threat Monitoring and Incident Response</p>
+        </div>
+    );
+}
+
+export default App;
+-Run the frontend:
+bash code
+npm start
