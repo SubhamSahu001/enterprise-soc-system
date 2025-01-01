@@ -1,0 +1,27 @@
+-ment (Python)
+-main.py (Flask App for APIs):
+- Python code
+from flask import Flask, jsonify
+
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    return jsonify({"message": "Welcome to Unified Enterprise SOC Platform!"})
+
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0", port=5000)
+    ---
+-threat_detection.py:
+-python code
+import pandas as pd
+from sklearn.ensemble import IsolationForest
+
+def detect_anomalies(log_data):
+    model = IsolationForest(contamination=0.01)
+    model.fit(log_data)
+    anomalies = model.predict(log_data)
+    return anomalies
+-Install dependencies and save them in requirements.txt:
+-bash code
+pip freeze > requirements.txt
